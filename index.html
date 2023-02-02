@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weryfikator numerów PESEL | hexandcube.eu.org</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet" href="/assets/normalize.css">
+    <link rel="stylesheet" href="/assets/milligram.css">
+    </head>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 25vh;">
+        <h1 style="font-weight: bold;">Weryfikator numerów PESEL</h1>
+        <p>Wprowadź numer PESEL</p>
+        <input type="text" placeholder="XXXXXXXXXXX" id="PESEL" autofocus
+            style="text-align: center; font-family: monospace; max-width: 20rem;" maxlength="11" >
+        <input class="button-primary" type="submit" id="button" value="ZWERYFIKUJ" onclick="verifyPESEL()">
+        <br>
+        <span style="text-align: center; color:gray;" id="result"></span>
+        <br>
+        <br>
+        <br>
+        <br>
+        <span style="text-align: center; color:gray;">Weryfikator Numerów PESEL by Hexandcube</span>
+        <br>
+        <p>
+        <a class="underlined" href="https://github.com/hexandcube/pesel.hexandcube.eu.org" style="text-align: center; color:gray;"><u>Kod źródłowy</u></span>
+        |
+        <a class="underlined" href="https://pl.wikipedia.org/wiki/PESEL#Numer_PESEL" style="text-align: center; color:gray;"><u>Dowiedz się więcej o numerach PESEL</u></span>
+        |
+        <a class="underlined" href="/privacy.txt" style="text-align: center; color:gray;"><u>Polityka Prywatności</u></span>
+        </p>
+        
+    </div>
+    <script>
+        function verifyPESEL() {
+            let pesel = document.getElementById("PESEL").value;
+            let result = document.getElementById("result");
+            if (pesel.length != 11) {
+                result.innerHTML = "Wprowadzono <b>niepoprawny</b> numer PESEL: Długość numeru PESEL to 11 znaków";
+                result.style.color = "#ff0000";
+                return;
+            }
+            var peselArray = pesel.split("");
+            var controlSum =0;
+            for (var i=0; i<11; i++) {
+                switch(i) {
+                    case 1:
+                        var digitMultiplier = 3;
+                        break;
+                    case 2:
+                        var digitMultiplier = 7;
+                        break;
+                    case 3:
+                        var digitMultiplier = 9;
+                        break;
+                    case 5:
+                        var digitMultiplier = 3;
+                        break;
+                    case 6:
+                        var digitMultiplier = 7;
+                        break;
+                    case 7:
+                        var digitMultiplier = 9;
+                        break;
+                    case 9:
+                        var digitMultiplier = 3;
+                        break;
+                    default:
+                        var digitMultiplier = 1;
+                        break;
+                }
+                controlSum += peselArray[i]*digitMultiplier;
+            };
+
+            if (controlSum % 10 != 0) {
+                result.innerHTML = "Wprowadzono <b>niepoprawny</b> numer PESEL: Niepoprawna suma kontrolna";
+                result.style.color = "#ff0000";
+                return;
+            }
+
+            var monthAndDecadeValue = parseInt(peselArray[2] + "" + peselArray[3]);
+
+            if (monthAndDecadeValue - 80 <= 12 && monthAndDecadeValue - 80 >= 1) {
+                year = "18" + peselArray[0] + peselArray[1];
+                month = monthAndDecadeValue - 80;
+            } else if (monthAndDecadeValue - 60 <= 12 && monthAndDecadeValue - 60>= 1){
+                year = "22" + peselArray[0] + peselArray[1];
+                month = monthAndDecadeValue - 60;
+            } else if (monthAndDecadeValue - 40 <= 12 && monthAndDecadeValue - 40>= 1){
+                year = "21" + peselArray[0] + peselArray[1];
+                month = monthAndDecadeValue - 40;
+            } else if (monthAndDecadeValue - 20 <= 12 && monthAndDecadeValue - 20>= 1){
+                year = "20" + peselArray[0] + peselArray[1];
+                month = monthAndDecadeValue - 20;
+            } else {
+                year = "19" + peselArray[0] + peselArray[1];
+                month = monthAndDecadeValue;
+            }
+
+            var day = peselArray[4] + peselArray[5];
+            let birthday = new Date(year, month-1, day);
+            const monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+
+
+            result.style.color = "gray";
+            result.innerHTML = `Wprowadzony numer PESEL jest <b>poprawny</b>!<br>
+            <br><b>PESEL:</b> ${pesel}<br>
+            <b>Data urodzenia:</b> ${birthday.toLocaleDateString()}<br>
+            <b>Rok urodzenia:</b> ${year} <br>
+            <b>Miesiąc urodzenia:</b> ${monthNames[month-1]} <br>
+            <b>Dzień urodzenia:</b> ${day} <br>
+            <b>Płeć:</b> ${peselArray[9]%2 == 0 ? "Kobieta" : "Mężczyzna"}`;
+            
+        }
+
+        var peselInput = document.getElementById('PESEL');
+        peselInput.onkeydown = function(e) {
+            if (e.key == "Enter") { 
+                verifyPESEL();
+                e.preventDefault(); 
+            };
+        };
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-92YQHSCXV4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-92YQHSCXV4');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5371320534629727"
+        crossorigin="anonymous"></script>
+</body>
+</html>
